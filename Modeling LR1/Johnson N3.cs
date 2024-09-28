@@ -123,8 +123,7 @@ namespace Modeling_LR1
         private bool Cond()
         {
             int mina = a_res[0], maxb = b_res[0], minc = c_res[0];
-            for (int i = 1; i < size; i++)
-            {
+            for (int i = 1; i < size; i++){
                 mina = Math.Min(mina, a_res[i]);
                 maxb = Math.Max(maxb, b_res[i]);
                 minc = Math.Min(minc, c_res[i]);
@@ -134,132 +133,122 @@ namespace Modeling_LR1
 
         private void Johnson()
         {
+            //берём значения из таблицы
             for (int i = 0; i < size; i++)
             {
                 a_res[i] = Convert.ToInt32(grid_input.Rows[i].Cells[1].Value);
                 b_res[i] = Convert.ToInt32(grid_input.Rows[i].Cells[2].Value);
                 c_res[i] = Convert.ToInt32(grid_input.Rows[i].Cells[3].Value);
-                a_res[i] += b_res[i];
-                b_res[i] += c_res[i];
+                a_res[i] += b_res[i]; //приводим задачу 
+                b_res[i] += c_res[i]; //      nx3 к nx2
                 nums_res[i] = i + 1;
             }
-
+            //массив посещённых элементов
             bool[] vis = new bool[size];
-
+            //обнуляем этот массив
             for (int i = 0; i < size; i++) vis[i] = false;
 
-            for (int i = 0; i < size; i++)
-            {
-                Funs.Pair<int, int> minEl = MinElem(vis);
-                if (minEl.First == -1) break;
-                if (minEl.First == 1)
-                {
-                    for (int j = 0; j < size; j++)
-                    {
-                        if (i != minEl.Second && !vis[i])
-                        {
-                            swap(a_res, b_res, c_res, nums_res, j, minEl.Second);
-                            vis[i] = true;
-                            break;
+            for (int i = 0; i < size; i++){
+                Funs.Pair<int, int> minEl = MinElem(vis); //находим минимальный элемент
+                if (minEl.First == -1) break; //выходим, если все элементы просмотрены 
+                if (minEl.First == 1){ //если минимальным элементовм был A
+                    for (int j = 0; j < size; j++){
+                        //находим первый элемент, который не является нашим выбранным минимальным
+                        //                                          и при этом не был ещё посещён
+                        if (i != minEl.Second && !vis[i]){ 
+                            swap(a_res, b_res, c_res, nums_res, j, minEl.Second); //меняем местами
+                            vis[i] = true;           //отмечаем найденный элемент посещённым
+                            vis[minEl.Second] = true;//отмечаем наш минимальный элмент посещённым
+                            break;                   //заканчиваем поиск 
                         }
                     }
                 }
-                else if (minEl.First == 2)
-                {
-                    for (int j = size - 1; j >= 0; j--)
-                    {
-                        if (i != minEl.Second && !vis[i])
-                        {
-                            swap(a_res, b_res, c_res, nums_res, j, minEl.Second);
-                            vis[i] = true;
-                            break;
+                else if (minEl.First == 2){ //если минимальным элементовм был B
+                    for (int j = size - 1; j >= 0; j--){
+                        //находим первый элемент с конца, который не является нашим выбранным
+                        //                          минимальным и при этом не был ещё посещён                                       
+                        if (i != minEl.Second && !vis[i]){ 
+                            swap(a_res, b_res, c_res, nums_res, j, minEl.Second); //меняем местами
+                            vis[i] = true;           //отмечаем найденный элемент посещённым
+                            vis[minEl.Second] = true;//отмечаем наш минимальный элмент посещённым
+                            break;                   //заканчиваем поиск 
                         }
                     }
                 }
             }
             int c_s, y_s;
-
-            for (int i = 0; i < size; i++)
-            {
+            //восстанавливаем данныы для a,b и с, так как мы приводили задачу к nx2
+            for (int i = 0; i < size; i++){
                 a_res[i] = Convert.ToInt32(grid_input.Rows[nums_res[i]-1].Cells[1].Value);
                 b_res[i] = Convert.ToInt32(grid_input.Rows[nums_res[i]-1].Cells[2].Value);
                 c_res[i] = Convert.ToInt32(grid_input.Rows[nums_res[i]-1].Cells[3].Value);
             }
-
+            //вычисляем X и Y (снова используем тот же метод для нахождения простоев)
             FindX(a_res, b_res, c_res, x_res, y_res, out c_s, out y_s);
             t2_lb.Text = "T = " + (c_s+y_s).ToString() + " | Y = " + y_s;
+            //записываем результаты в таблицу результатов
             FillOutputGrid(nums_res);
         }
 
         private Funs.Pair<int, int> MinElem(bool[] vis)
         {
-            int index = -1;
+            int index = -1; //индекс самого элемента
             int sit = -1; //-1 - нет минимального, 1 - мин. эл. А, 2 - мин. эл. Б 
 
-            for (int i = 0; i < size; i++)
-            {
-                if (!vis[i])
-                {
+            for (int i = 0; i < size; i++){
+                if (!vis[i]){
                     index = i;
                     break;
                 }
             }
-
-            if (index == -1) return new Funs.Pair<int, int>(sit, index); //все элементы просмотрены
-
+            if (index == -1) return new Funs.Pair<int, int>(sit, index); //если все элементы просмотрены
             int minEl = a_res[index];
-
-            for (int i = 0; i < size; i++)
-            {
-                if (!vis[i])
-                {
-                    if (a_res[i] < minEl)
-                    {
-                        minEl = a_res[i];
-                        index = i;
-                        sit = 1;
+            for (int i = 0; i < size; i++){
+                if (!vis[i]){//если элемент не просмотрен
+                    if (a_res[i] < minEl){ //сравниваем элемент с min
+                        minEl = a_res[i];  //присваиваем элемент
+                        index = i;         //присваиваем индекс элемента
+                        sit = 1;           //ситуация 1, когда мин. эл - это А
                     }
-                    if (b_res[i] < minEl)
-                    {
-                        minEl = b_res[i];
-                        index = i;
-                        sit = 2;
+                    if (b_res[i] < minEl){ //сравниваем элемент с min
+                        minEl = b_res[i];  //присваиваем элемент  
+                        index = i;         //присваиваем индекс элемента 
+                        sit = 2;           //ситуация 2, когда мин. эл - это В
                     }
                 }
             }
-            return new Funs.Pair<int, int>(sit, index);
+            //возвращаем результат с номером ситуации и индексом элемента
+            return new Funs.Pair<int, int>(sit, index); 
         }
 
         private void SolutionEnum()
         {
+            //Объявление временных переменнх
             int[] a = new int[size];
             int[] b = new int[size];
             int[] c = new int[size];
+            int[] x = new int[size];
+            int[] y = new int[size];
             int[] nums = new int[size];
-            for (int i = 0; i < size; i++)
-            {
+            for (int i = 0; i < size; i++){
                 a[i] = Convert.ToInt32(grid_input.Rows[i].Cells[1].Value);
                 b[i] = Convert.ToInt32(grid_input.Rows[i].Cells[2].Value);
                 c[i] = Convert.ToInt32(grid_input.Rows[i].Cells[3].Value);
                 nums[i] = i + 1;
             }
-            int[] x = new int[size];
-            int[] y = new int[size];
-
             int min = int.MaxValue;
             int sum;
             int c_sum;
             int y_sum;
             int y_min = 0;
-            do
-            {
+            do{
+                //Вычисление простоев
                 FindX(a, b, c, x, y, out c_sum, out y_sum);
                 sum = y_sum + c_sum;
-                if (sum < min)
-                {
+                //Если общее время меньше минимального, то присваиваем все переменные в результат
+                if (sum < min) {
                     y_min = y_sum;
-                    for (int i = 0; i < size; i++)
-                    {
+                    for (int i = 0; i < size; i++){
                         a_res[i] = a[i];
                         b_res[i] = b[i];
                         c_res[i] = c[i];
@@ -268,10 +257,12 @@ namespace Modeling_LR1
                         nums_res[i] = nums[i];
                     }
                     min = sum;
-
                 }
+                //Еслм есть варианты перебора, то продолжаем
             } while (NextSet(a, b, c, nums, size));
+            //Вывод общего времени и простоя на экран
             t2_lb.Text = "T = " + min.ToString() + " | Y = " + y_min;
+            //Заполнение таблицы результатов
             FillOutputGrid(nums_res);
         }
 
@@ -287,35 +278,35 @@ namespace Modeling_LR1
 
         }
 
+        //Нахождение простоев
         private void FindX(int[] a, int[] b, int[] c, int[] x, int[] y, out int c_sum, out int y_sum)
         {
             int b_sum = 0;
             int a_sum = a[0];
-            x[0] = a[0];
+            x[0] = a[0];    //x1 = a1
             int x_sum = x[0];
 
             c_sum = 0;
-            y[0] = x[0] + b[0];
+            y[0] = x[0] + b[0]; //y1 = x1+b1
             y_sum = y[0];
-            for (int i = 1; i < size; i++)
-            {
+
+            for (int i = 1; i < size; i++){
                 x[i] = 0;
                 y[i] = 0;
             }
-            for (int i = 1; i < size; i++)
-            {
-                a_sum += a[i];
-                b_sum += b[i - 1];
-                c_sum += c[i - 1];
-                x[i] = Math.Max(a_sum - x_sum - b_sum, 0);
-                x_sum += x[i];
-
+            for (int i = 1; i < size; i++){
+                a_sum += a[i]; //хранит сумму А от 1 до i
+                b_sum += b[i - 1]; //хранит сумму B от 1 до i-1
+                c_sum += c[i - 1]; //хранит сумму C от 1 до i-1
+                x[i] = Math.Max(a_sum - x_sum - b_sum, 0); //xi = Max(a1 + ... + ai - x1 - ... - xi-1 - b1 - ... - bi-1, 0)
+                x_sum += x[i]; //хранит сумму X от 1 до i
+                //yi = Max(x1 + ... xi + b1 + ... bi - y1 - ... yi-1 - c1 - ... - ci-1, 0)
                 y[i] = Math.Max(x_sum + b_sum + b[i] - y_sum - c_sum, 0);
-                y_sum += y[i];
+                y_sum += y[i];  //хранит сумму Y от 1 до i
             }
-            b_sum += b[size - 1];
+            //добавляем остаточные bn и cn, чтобы была сумма всех элементов
+            b_sum += b[size - 1]; 
             c_sum += c[size - 1];
-
         }
         void swap(int[] a, int[] b, int[] c, int[] nums, int i, int j)
         {
