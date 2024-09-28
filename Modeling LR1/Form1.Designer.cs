@@ -28,159 +28,105 @@
         /// </summary>
         private void InitializeComponent()
         {
-            grid_input = new DataGridView();
-            input_lb = new Label();
-            calc_bttn = new Time_Manager.RJControls.CustomButton();
-            calc_panel = new Panel();
-            line_lb2 = new Label();
-            line_lb = new Label();
-            a_b_lb = new Label();
-            solve_lb = new Label();
-            grid_output = new DataGridView();
-            ((System.ComponentModel.ISupportInitialize)grid_input).BeginInit();
-            calc_panel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)grid_output).BeginInit();
+            cTC1 = new Time_Manager.RJControls.CustomTabControl();
+            panel1 = new Panel();
+            picBox_underline = new PictureBox();
+            page_bttn2 = new Time_Manager.RJControls.CustomButton();
+            page_bttn1 = new Time_Manager.RJControls.CustomButton();
+            panel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)picBox_underline).BeginInit();
             SuspendLayout();
             // 
-            // grid_input
+            // cTC1
             // 
-            grid_input.BackgroundColor = Color.FromArgb(1, 4, 9);
-            grid_input.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
-            grid_input.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            grid_input.Location = new Point(53, 82);
-            grid_input.Name = "grid_input";
-            grid_input.RowHeadersWidth = 51;
-            grid_input.Size = new Size(175, 207);
-            grid_input.TabIndex = 0;
+            cTC1.BackColor = Color.FromArgb(13, 17, 23);
+            cTC1.Location = new Point(0, 86);
+            cTC1.Name = "cTC1";
+            cTC1.SelectedIndex = 0;
+            cTC1.Size = new Size(1920, 951);
+            cTC1.TabIndex = 0;
+            cTC1.Load += cTC1_Load;
             // 
-            // input_lb
+            // panel1
             // 
-            input_lb.AutoSize = true;
-            input_lb.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            input_lb.ForeColor = Color.White;
-            input_lb.Location = new Point(53, 43);
-            input_lb.Name = "input_lb";
-            input_lb.Size = new Size(105, 20);
-            input_lb.TabIndex = 1;
-            input_lb.Text = "Ввод данных";
+            panel1.BackColor = Color.FromArgb(1, 4, 9);
+            panel1.Controls.Add(picBox_underline);
+            panel1.Controls.Add(page_bttn2);
+            panel1.Controls.Add(page_bttn1);
+            panel1.Dock = DockStyle.Top;
+            panel1.Location = new Point(0, 0);
+            panel1.Name = "panel1";
+            panel1.Size = new Size(1902, 88);
+            panel1.TabIndex = 1;
             // 
-            // calc_bttn
+            // picBox_underline
             // 
-            calc_bttn.BorderColor = Color.FromArgb(147, 154, 163);
-            calc_bttn.BorderThickness = 0;
-            calc_bttn.BorderVisible = true;
-            calc_bttn.ButtonColor = Color.FromArgb(33, 40, 48);
-            calc_bttn.ClickColor = Color.FromArgb(33, 40, 48);
-            calc_bttn.CornerRadius = 0;
-            calc_bttn.EnableAnimation = true;
-            calc_bttn.Font = new Font("Arial", 7F, FontStyle.Bold);
-            calc_bttn.HoverColor = Color.FromArgb(33, 40, 48);
-            calc_bttn.Location = new Point(145, 295);
-            calc_bttn.Name = "calc_bttn";
-            calc_bttn.Size = new Size(83, 34);
-            calc_bttn.TabIndex = 2;
-            calc_bttn.Text = "Построить";
-            calc_bttn.TextColor = Color.FromArgb(233, 238, 245);
-            calc_bttn.Click += calc_bttn_Click;
+            picBox_underline.BackColor = Color.FromArgb(255, 137, 109);
+            picBox_underline.Location = new Point(35, 86);
+            picBox_underline.Name = "picBox_underline";
+            picBox_underline.Size = new Size(70, 2);
+            picBox_underline.TabIndex = 15;
+            picBox_underline.TabStop = false;
             // 
-            // calc_panel
+            // page_bttn2
             // 
-            calc_panel.BorderStyle = BorderStyle.FixedSingle;
-            calc_panel.Controls.Add(line_lb2);
-            calc_panel.Controls.Add(line_lb);
-            calc_panel.Controls.Add(a_b_lb);
-            calc_panel.Location = new Point(270, 82);
-            calc_panel.Name = "calc_panel";
-            calc_panel.Size = new Size(783, 207);
-            calc_panel.TabIndex = 3;
+            page_bttn2.BorderColor = Color.FromArgb(147, 154, 163);
+            page_bttn2.BorderThickness = 0;
+            page_bttn2.BorderVisible = false;
+            page_bttn2.ButtonColor = Color.FromArgb(1, 4, 9);
+            page_bttn2.ClickColor = Color.FromArgb(8, 13, 18);
+            page_bttn2.CornerRadius = 9;
+            page_bttn2.EnableAnimation = true;
+            page_bttn2.Font = new Font("Arial", 8F, FontStyle.Bold);
+            page_bttn2.HoverColor = Color.FromArgb(33, 40, 48);
+            page_bttn2.Location = new Point(125, 40);
+            page_bttn2.Name = "page_bttn2";
+            page_bttn2.Size = new Size(100, 45);
+            page_bttn2.TabIndex = 14;
+            page_bttn2.Text = "N3";
+            page_bttn2.TextColor = Color.FromArgb(233, 238, 245);
             // 
-            // line_lb2
+            // page_bttn1
             // 
-            line_lb2.AutoSize = true;
-            line_lb2.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            line_lb2.ForeColor = Color.White;
-            line_lb2.Location = new Point(45, 64);
-            line_lb2.Name = "line_lb2";
-            line_lb2.Size = new Size(14, 20);
-            line_lb2.TabIndex = 2;
-            line_lb2.Text = "|";
-            // 
-            // line_lb
-            // 
-            line_lb.AutoSize = true;
-            line_lb.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            line_lb.ForeColor = Color.White;
-            line_lb.Location = new Point(45, 44);
-            line_lb.Name = "line_lb";
-            line_lb.Size = new Size(14, 20);
-            line_lb.TabIndex = 1;
-            line_lb.Text = "|";
-            // 
-            // a_b_lb
-            // 
-            a_b_lb.AutoSize = true;
-            a_b_lb.Font = new Font("Segoe UI", 9F, FontStyle.Bold, GraphicsUnit.Point, 204);
-            a_b_lb.ForeColor = Color.White;
-            a_b_lb.Location = new Point(30, 25);
-            a_b_lb.Name = "a_b_lb";
-            a_b_lb.Size = new Size(29, 60);
-            a_b_lb.TabIndex = 0;
-            a_b_lb.Text = "A |\r\n   \r\nB ";
-            // 
-            // solve_lb
-            // 
-            solve_lb.AutoSize = true;
-            solve_lb.ForeColor = Color.White;
-            solve_lb.Location = new Point(304, 319);
-            solve_lb.MinimumSize = new Size(700, 250);
-            solve_lb.Name = "solve_lb";
-            solve_lb.Size = new Size(700, 250);
-            solve_lb.TabIndex = 4;
-            // 
-            // grid_output
-            // 
-            grid_output.BackgroundColor = Color.FromArgb(1, 4, 9);
-            grid_output.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.Single;
-            grid_output.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            grid_output.Location = new Point(53, 348);
-            grid_output.Name = "grid_output";
-            grid_output.RowHeadersWidth = 51;
-            grid_output.Size = new Size(175, 207);
-            grid_output.TabIndex = 5;
+            page_bttn1.BorderColor = Color.FromArgb(147, 154, 163);
+            page_bttn1.BorderThickness = 0;
+            page_bttn1.BorderVisible = false;
+            page_bttn1.ButtonColor = Color.FromArgb(1, 4, 9);
+            page_bttn1.ClickColor = Color.FromArgb(8, 13, 18);
+            page_bttn1.CornerRadius = 9;
+            page_bttn1.EnableAnimation = true;
+            page_bttn1.Font = new Font("Arial", 8F, FontStyle.Bold);
+            page_bttn1.HoverColor = Color.FromArgb(33, 40, 48);
+            page_bttn1.Location = new Point(20, 40);
+            page_bttn1.Name = "page_bttn1";
+            page_bttn1.Size = new Size(100, 45);
+            page_bttn1.TabIndex = 13;
+            page_bttn1.Text = "N2";
+            page_bttn1.TextColor = Color.FromArgb(233, 238, 245);
             // 
             // Form1
             // 
             AutoScaleDimensions = new SizeF(8F, 20F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.FromArgb(13, 17, 23);
-            ClientSize = new Size(1059, 567);
-            Controls.Add(grid_output);
-            Controls.Add(solve_lb);
-            Controls.Add(calc_panel);
-            Controls.Add(calc_bttn);
-            Controls.Add(input_lb);
-            Controls.Add(grid_input);
+            ClientSize = new Size(1902, 1033);
+            Controls.Add(panel1);
+            Controls.Add(cTC1);
             Name = "Form1";
             Text = "Form1";
+            WindowState = FormWindowState.Maximized;
             Load += Form1_Load;
-            ((System.ComponentModel.ISupportInitialize)grid_input).EndInit();
-            calc_panel.ResumeLayout(false);
-            calc_panel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)grid_output).EndInit();
+            panel1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)picBox_underline).EndInit();
             ResumeLayout(false);
-            PerformLayout();
         }
 
         #endregion
 
-        private DataGridView grid_input;
-        private Label input_lb;
-        private Time_Manager.RJControls.CustomButton calc_bttn;
-        private Panel calc_panel;
-        private Label line_lb2;
-        private Label line_lb;
-        private Label a_b_lb;
-        private Label solve_lb;
-        private DataGridView grid_output;
+        private Time_Manager.RJControls.CustomTabControl cTC1;
+        private Panel panel1;
+        private PictureBox picBox_underline;
+        private Time_Manager.RJControls.CustomButton page_bttn2;
+        private Time_Manager.RJControls.CustomButton page_bttn1;
     }
 }

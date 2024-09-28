@@ -11,54 +11,61 @@ using System.Windows.Forms;
 
 namespace Modeling_LR1
 {
-    public partial class Johnson_N2 : UserControl
+    public partial class Johnson_N3 : UserControl
     {
-        public Johnson_N2()
+        private Color[] colors = { Color.Red, Color.Green, Color.Blue, Color.OrangeRed, Color.Brown, Color.Yellow, Color.Orange };
+        private int[] a_res;
+        private int[] b_res;
+        private int[] c_res;
+        private int[] x_res;
+        private int[] y_res;
+        private int[] nums_res;
+        private Label[,] lbs;
+        private int size = 0;
+        private int c_vals = 5;
+
+        private List<PictureBox> picListInput = new List<PictureBox>();
+        private List<PictureBox> picListOutput = new List<PictureBox>();
+        public Johnson_N3()
         {
             InitializeComponent();
         }
 
-        private Color[] colors = { Color.Red, Color.Green, Color.Blue, Color.Orange, Color.Brown, Color.Yellow };
-        private int[] a_res;
-        private int[] b_res;
-        private int[] x_res;
-        private int[] nums_res;
-
-        private Label[,] lbs;
-
-        private int size = 0;
-        private int c_vals = 3;
-
-        private List<PictureBox> picListInput = new List<PictureBox>();
-        private List<PictureBox> picListOutput = new List<PictureBox>();
-        private void Johnson_N2_Load(object sender, EventArgs e)
+        private void Johnson_N3_Load(object sender, EventArgs e)
         {
-            Funs.SetSize("inputN2.txt", out size);
-            Funs.InitGrid(grid_input, true, size);
-            Funs.InitGrid(grid_output, true, size);
-            Funs.FillGrid("inputN2.txt", true, grid_input, grid_output, size);
+            Funs.SetSize("inputN3.txt", out size);
+            Funs.InitGrid(grid_input, false, size);
+            Funs.InitGrid(grid_output, false, size);
 
-            grid_output.ReadOnly = true;
+            Funs.FillGrid("inputN3.txt", false, grid_input, grid_output, size);
 
             a_res = new int[size];
             b_res = new int[size];
+            c_res = new int[size];
             x_res = new int[size];
+            y_res = new int[size];
 
             int[] nums = new int[size];
             nums_res = nums;
+
 
             InitLbs(nums);
 
             StartSit();
             FillOutputGrid(nums);
             DrawSolution(true, calc_panel, picListInput);
+            if(!Cond())
+            {
+                t2_lb.Text = "Условие не выполняется!";
+                return;
+            }
             calc_bttn_Click(calc_bttn, null);
         }
 
         private void InitLbs(int[] nums)
         {
             lbs = new Label[2, size * c_vals];
-            String[] str = { "a", "x", "b" };
+            String[] str = { "a", "x", "b", "y", "c" };
 
             for (int i = 0; i < size; i++)
             {
@@ -78,8 +85,6 @@ namespace Modeling_LR1
                 }
             }
         }
-
-
         private void VisibleOffForLb(bool flag)
         {
             int id = flag ? 0 : 1;
@@ -89,28 +94,43 @@ namespace Modeling_LR1
                     lbs[id, i * c_vals + j].Visible = false;
             }
         }
-
-
+        
         private void StartSit()
         {
             int[] a = new int[size];
             int[] b = new int[size];
+            int[] c = new int[size];
             int[] x = new int[size];
+            int[] y = new int[size];
             for (int i = 0; i < size; i++)
             {
                 a[i] = Convert.ToInt32(grid_input.Rows[i].Cells[1].Value);
                 b[i] = Convert.ToInt32(grid_input.Rows[i].Cells[2].Value);
+                c[i] = Convert.ToInt32(grid_input.Rows[i].Cells[3].Value);
             }
-            int b_sum = 0;
-            int x_sum = 0;
-            FindX(a, b, x, out b_sum, out x_sum);
-            t1_lb.Text = "T = " + (b_sum + x_sum).ToString() + " | X = " + x_sum;
+            int c_sum = 0;
+            int y_sum = 0;
+            FindX(a, b, c, x, y, out c_sum, out y_sum);
+            t1_lb.Text = "T = " + (c_sum + y_sum).ToString() + " | Y = " + y_sum;
             a_res = a;
             b_res = b;
+            c_res = c;
             x_res = x;
-        }
+            y_res = y;
 
+        }
         
+        private bool Cond()
+        {
+            int mina = a_res[0], maxb = b_res[0], minc = c_res[0];
+            for (int i = 1; i < size; i++)
+            {
+                mina = Math.Min(mina, a_res[i]);
+                maxb = Math.Max(maxb, b_res[i]);
+                minc = Math.Min(minc, c_res[i]);
+            }
+            return (mina >= maxb || minc >= maxb); 
+        }
 
         private void Johnson()
         {
@@ -118,6 +138,9 @@ namespace Modeling_LR1
             {
                 a_res[i] = Convert.ToInt32(grid_input.Rows[i].Cells[1].Value);
                 b_res[i] = Convert.ToInt32(grid_input.Rows[i].Cells[2].Value);
+                c_res[i] = Convert.ToInt32(grid_input.Rows[i].Cells[3].Value);
+                a_res[i] += b_res[i];
+                b_res[i] += c_res[i];
                 nums_res[i] = i + 1;
             }
 
@@ -129,33 +152,42 @@ namespace Modeling_LR1
             {
                 Funs.Pair<int, int> minEl = MinElem(vis);
                 if (minEl.First == -1) break;
-                if(minEl.First == 1){
+                if (minEl.First == 1)
+                {
                     for (int j = 0; j < size; j++)
                     {
-                        if (j != minEl.Second && !vis[j]) { 
-                            swap(a_res, b_res, nums_res, j, minEl.Second);
-                            vis[j] = true;
-                            vis[minEl.Second] = true;
+                        if (i != minEl.Second && !vis[i])
+                        {
+                            swap(a_res, b_res, c_res, nums_res, j, minEl.Second);
+                            vis[i] = true;
                             break;
                         }
                     }
                 }
-                else if(minEl.First == 2) {
-                    for (int j = size-1; j >= 0; j--)
+                else if (minEl.First == 2)
+                {
+                    for (int j = size - 1; j >= 0; j--)
                     {
-                        if (j != minEl.Second && !vis[j])
+                        if (i != minEl.Second && !vis[i])
                         {
-                            swap(a_res, b_res, nums_res, j, minEl.Second);
-                            vis[j] = true;
-                            vis[minEl.Second] = true;
+                            swap(a_res, b_res, c_res, nums_res, j, minEl.Second);
+                            vis[i] = true;
                             break;
                         }
                     }
                 }
             }
-            int b_s, x_s;
-            FindX(a_res, b_res, x_res, out b_s, out x_s);
-            t2_lb.Text = "T = " + (b_s + x_s).ToString() + " | X = " + x_s;
+            int c_s, y_s;
+
+            for (int i = 0; i < size; i++)
+            {
+                a_res[i] = Convert.ToInt32(grid_input.Rows[nums_res[i]-1].Cells[1].Value);
+                b_res[i] = Convert.ToInt32(grid_input.Rows[nums_res[i]-1].Cells[2].Value);
+                c_res[i] = Convert.ToInt32(grid_input.Rows[nums_res[i]-1].Cells[3].Value);
+            }
+
+            FindX(a_res, b_res, c_res, x_res, y_res, out c_s, out y_s);
+            t2_lb.Text = "T = " + (c_s+y_s).ToString() + " | Y = " + y_s;
             FillOutputGrid(nums_res);
         }
 
@@ -164,8 +196,10 @@ namespace Modeling_LR1
             int index = -1;
             int sit = -1; //-1 - нет минимального, 1 - мин. эл. А, 2 - мин. эл. Б 
 
-            for (int i = 0; i < size; i++){
-                if (!vis[i]){
+            for (int i = 0; i < size; i++)
+            {
+                if (!vis[i])
+                {
                     index = i;
                     break;
                 }
@@ -174,17 +208,18 @@ namespace Modeling_LR1
             if (index == -1) return new Funs.Pair<int, int>(sit, index); //все элементы просмотрены
 
             int minEl = a_res[index];
-            index = 0;
-            sit = 1;
-            for (int i = 0; i < size; i++){
-                if (!vis[i]){
-                    if (a_res[i] <= minEl)
+
+            for (int i = 0; i < size; i++)
+            {
+                if (!vis[i])
+                {
+                    if (a_res[i] < minEl)
                     {
                         minEl = a_res[i];
                         index = i;
                         sit = 1;
                     }
-                    if (b_res[i] <= minEl)
+                    if (b_res[i] < minEl)
                     {
                         minEl = b_res[i];
                         index = i;
@@ -192,49 +227,51 @@ namespace Modeling_LR1
                     }
                 }
             }
-            return new Funs.Pair<int, int>( sit, index );
+            return new Funs.Pair<int, int>(sit, index);
         }
-
 
         private void SolutionEnum()
         {
             int[] a = new int[size];
             int[] b = new int[size];
+            int[] c = new int[size];
             int[] nums = new int[size];
             for (int i = 0; i < size; i++)
             {
                 a[i] = Convert.ToInt32(grid_input.Rows[i].Cells[1].Value);
                 b[i] = Convert.ToInt32(grid_input.Rows[i].Cells[2].Value);
+                c[i] = Convert.ToInt32(grid_input.Rows[i].Cells[3].Value);
                 nums[i] = i + 1;
             }
             int[] x = new int[size];
+            int[] y = new int[size];
 
             int min = int.MaxValue;
             int sum;
-            int b_sum;
-            int x_sum;
-            int x_min = 0;
+            int c_sum;
+            int y_sum;
+            int y_min = 0;
             do
             {
-                sum = 0;
-                FindX(a, b, x, out b_sum, out x_sum);
-                sum = x_sum + b_sum;
-                //Если общее время меньше минимального, то присваиваем все переменные в результат
+                FindX(a, b, c, x, y, out c_sum, out y_sum);
+                sum = y_sum + c_sum;
                 if (sum < min)
                 {
-                    x_min = x_sum;
+                    y_min = y_sum;
                     for (int i = 0; i < size; i++)
                     {
                         a_res[i] = a[i];
                         b_res[i] = b[i];
+                        c_res[i] = c[i];
                         x_res[i] = x[i];
+                        y_res[i] = y[i];
                         nums_res[i] = nums[i];
                     }
                     min = sum;
 
                 }
-            } while (NextSet(a, b, nums, size));
-            t2_lb.Text = "T = " + min.ToString() + " | X = " + x_min; 
+            } while (NextSet(a, b, c, nums, size));
+            t2_lb.Text = "T = " + min.ToString() + " | Y = " + y_min;
             FillOutputGrid(nums_res);
         }
 
@@ -245,28 +282,42 @@ namespace Modeling_LR1
                 grid_output.Rows[i].Cells[0].Value = nums_res[i];
                 grid_output.Rows[i].Cells[1].Value = a_res[i];
                 grid_output.Rows[i].Cells[2].Value = b_res[i];
+                grid_output.Rows[i].Cells[3].Value = c_res[i];
             }
 
         }
 
-        private void FindX(int[] a, int[] b, int[] x, out int b_sum, out int x_sum)
+        private void FindX(int[] a, int[] b, int[] c, int[] x, int[] y, out int c_sum, out int y_sum)
         {
-            b_sum = 0;
+            int b_sum = 0;
             int a_sum = a[0];
             x[0] = a[0];
-            x_sum = x[0];
+            int x_sum = x[0];
+
+            c_sum = 0;
+            y[0] = x[0] + b[0];
+            y_sum = y[0];
             for (int i = 1; i < size; i++)
+            {
                 x[i] = 0;
+                y[i] = 0;
+            }
             for (int i = 1; i < size; i++)
             {
                 a_sum += a[i];
                 b_sum += b[i - 1];
+                c_sum += c[i - 1];
                 x[i] = Math.Max(a_sum - x_sum - b_sum, 0);
                 x_sum += x[i];
+
+                y[i] = Math.Max(x_sum + b_sum + b[i] - y_sum - c_sum, 0);
+                y_sum += y[i];
             }
             b_sum += b[size - 1];
+            c_sum += c[size - 1];
+
         }
-        void swap(int[] a, int[] b, int[] nums, int i, int j)
+        void swap(int[] a, int[] b, int[] c, int[] nums, int i, int j)
         {
             int s = a[i];
             a[i] = a[j];
@@ -276,11 +327,15 @@ namespace Modeling_LR1
             b[i] = b[j];
             b[j] = s;
 
+            s = c[i];
+            c[i] = c[j];
+            c[j] = s;
+
             s = nums[i];
             nums[i] = nums[j];
             nums[j] = s;
         }
-        bool NextSet(int[] a, int[] b, int[] nums, int n)
+        bool NextSet(int[] a, int[] b, int[] c, int[] nums, int n)
         {
             int j = n - 2;
             while (j != -1 && nums[j] >= nums[j + 1]) j--;
@@ -288,10 +343,10 @@ namespace Modeling_LR1
                 return false; // больше перестановок нет 
             int k = n - 1;
             while (nums[j] >= nums[k]) k--;
-            swap(a, b, nums, j, k);
+            swap(a, b, c, nums, j, k);
             int l = j + 1, r = n - 1; // сортируем оставшуюся часть последовательности 
             while (l < r)
-                swap(a, b, nums, l++, r--);
+                swap(a, b, c, nums, l++, r--);
             return true;
         }
 
@@ -300,48 +355,59 @@ namespace Modeling_LR1
             VisibleOffForLb(flag);
             int sum_a = 0;
             int sum_b = 0;
+            int sum_c = 0;
             int x_count = 0;
+            int y_count = 0;
             int lb_id = flag ? 0 : 1;
             for (int i = 0; i < size; i++)
             {
                 int num = nums_res[i] - 1;
                 int a_size = Convert.ToInt32(grid_output.Rows[i].Cells[1].Value);
                 int b_size = Convert.ToInt32(grid_output.Rows[i].Cells[2].Value);
+                int c_size = Convert.ToInt32(grid_output.Rows[i].Cells[3].Value);
                 int x_size = x_res[i];
+                int y_size = y_res[i];
 
-                int[] sizes = { a_size, x_size, b_size};
+                int[] sizes = { a_size, x_size, b_size, y_size, c_size };
 
                 for (int k = 0; k < c_vals; k++)
                 {
                     int color_id = nums_res[i] - 1;
                     if (k == 1) color_id = 5;
+                    else if (k == 3) color_id = 6;
 
                     int t_sum = sum_a;
                     int t_h = 29;
                     int t_num = num;
-                    if (k > 0)
-                    {
+                    if (k == 1 || k == 2){
                         t_sum = sum_b;
                         t_h += 40;
                     }
-                    if (k == 1)
-                    {
+                    else if (k > 2){
+                        t_sum = sum_c;
+                        t_h += 80;
+                    }
+                    if (k == 1){
                         if (sizes[k] > 0)
                             t_num = x_count;
                         else continue;
                     }
+                    else if (k == 3){
+                        if (sizes[k] > 0)
+                            t_num = y_count;
+                        else continue;
+                    }
 
-                    for (int j = 0; j < sizes[k]; j++)
-                    {
+                    for (int j = 0; j < sizes[k]; j++){
                         if (sizes[k] < 2)
                             lbs[lb_id, t_num + k * size].Location = new Point(60 + i * 15 + t_sum, t_h - 25);
                         else if (j == (sizes[k] / 2) - 1)
-                            lbs[lb_id, t_num + k * size].Location = new Point(60 + i * 15 + t_sum + 7, t_h - 25);
+                            lbs[lb_id, t_num + k * size].Location = new Point(60 + i * 15 + t_sum + 7, t_h-25);
 
                         Funs.DrawSquare(colors[color_id], new Point(60 + i * 15 + t_sum, t_h), pn, picList);
 
                         t_sum += 15;
-                        if (j == sizes[k] - 1 && k != 1)
+                        if (j == sizes[k] - 1 && k != 1 && k != 3)
                         {
                             t_sum -= 15;
                         }
@@ -349,24 +415,13 @@ namespace Modeling_LR1
                     lbs[lb_id, t_num + k * size].Visible = true;
 
                     if (k == 1 && sizes[k] > 0) x_count++;
+                    else if (k == 3 && sizes[k] > 0)  y_count++;
 
                     if (k == 0) sum_a = t_sum;
-                    else  sum_b = t_sum;
+                    else if (k == 1 || k ==2) sum_b = t_sum;
+                    else if (k > 2) sum_c = t_sum;
                 }
             }
-        }
-
-        private void mode_TB_CheckedChanged(object sender, EventArgs e)
-        {
-            if (!mode_TB.Checked)
-            {
-                mode_lb.Text = "Джонсон";
-            }
-            else
-            {
-                mode_lb.Text = "Метод перебора";
-            }
-            calc_bttn_Click(calc_bttn, null);
         }
 
         private void calc_bttn_Click(object sender, EventArgs e)
@@ -375,7 +430,8 @@ namespace Modeling_LR1
             calc_bttn.Focus();
             for (int i = 0; i < size; i++)
             {
-                if (grid_input.Rows[i].Cells[1].Value == null || grid_input.Rows[i].Cells[2].Value == null)
+                if (grid_input.Rows[i].Cells[1].Value == null || grid_input.Rows[i].Cells[2].Value == null 
+                    || grid_input.Rows[i].Cells[3].Value == null)
                 {
                     MessageBox.Show("Не все данные введены!", "Внимание!");
                     return;
@@ -385,14 +441,38 @@ namespace Modeling_LR1
 
             if (!mode_TB.Checked) Johnson();
             else SolutionEnum();
-            if(picListOutput.Count > 0) Funs.ClearPictureBoxes(picListOutput, res_panel);
+            if (picListOutput.Count > 0) Funs.ClearPictureBoxes(picListOutput, res_panel);
             DrawSolution(false, res_panel, picListOutput);
         }
+
+        private void label1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void mode_TB_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!mode_TB.Checked)
+            {
+                mode_lb.Text = "Джонсон";
+                if(!Cond())
+                {
+                    t2_lb.Text = "Условие не выполняется!";
+                    return;
+                }
+            }
+            else
+            {
+                mode_lb.Text = "Метод перебора";
+            }
+            calc_bttn_Click(calc_bttn, null);
+        }
+
         private void update_data_bttn_Click(object sender, EventArgs e)
         {
             VisibleOffForLb(false);
             VisibleOffForLb(true);
-            Funs.SetSize("inputN2.txt", out size);
+            Funs.SetSize("inputN3.txt", out size);
 
             int[] nums = new int[size];
             for (int i = 0; i < size; i++)
@@ -400,17 +480,21 @@ namespace Modeling_LR1
                 nums[i] = i + 1;
             }
             nums_res = nums;
-
             Funs.ClearPictureBoxes(picListInput, calc_panel);
             Funs.ClearPictureBoxes(picListOutput, res_panel);
             Funs.SetRows(grid_input, size);
             Funs.SetRows(grid_output, size);
-            Funs.FillGrid("inputN2.txt", true, grid_input, grid_output, size);
+            Funs.FillGrid("inputN3.txt", false, grid_input, grid_output, size);
             InitLbs(nums);
 
             StartSit();
             FillOutputGrid(nums);
             DrawSolution(true, calc_panel, picListInput);
+            if (!Cond())
+            {
+                t2_lb.Text = "Условие не выполняется!";
+                return;
+            }
             calc_bttn_Click(calc_bttn, null);
         }
     }
